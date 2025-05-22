@@ -284,14 +284,14 @@ public class NotificationManager {
         System.out.println("Preferences saved. Total users with preferences: " + userPreferences.size());
     }
 
-    // Method to update a single notification preference
+    //method to update a single notification preference
     public void updateNotificationPreference(String userId, String userType,
                                              String channel, boolean enabled, int timingHours) {
         System.out.println("Updating preference for user: " + userId + ", Channel: " + channel);
 
-        List<NotificationPreference> prefs = userPreferences.get(userId);
+        List<NotificationPreference> prefs = userPreferences.computeIfAbsent(userId, k -> new ArrayList<>());
 
-        // If no preferences exist for this user yet, create a new list
+        //if no preferences exist for this user yet, create a new list
         if (prefs == null) {
             prefs = new ArrayList<>();
             userPreferences.put(userId, prefs);
