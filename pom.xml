@@ -12,8 +12,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <sonar.projectKey>MuathAlrefai_Special-Cook-Project</sonar.projectKey>
-    <sonar.organization>cook-project-phase2</sonar.organization>
+    <sonar.organization>projectphase2</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
   </properties>
 
