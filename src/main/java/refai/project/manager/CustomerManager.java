@@ -178,7 +178,7 @@ public class CustomerManager {
             return alternatives;
         }
 
-        List<String> allergyList = new ArrayList<>();
+        List<String> allergyList;
         if (customer.getAllergies() != null && !customer.getAllergies().isEmpty()) {
             allergyList = Arrays.asList(customer.getAllergies().split(","));
             for (String allergen : allergyList) {
