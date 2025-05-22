@@ -1,4 +1,4 @@
-package refai.project.test;
+package test;
 import refai.project.manager.CustomerManager;
 import refai.project.model.Customer;
 import org.junit.jupiter.api.BeforeEach;

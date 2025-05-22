@@ -1,4 +1,4 @@
-package refai.project.test;
+package test;
 import refai.project.manager.SupplierService;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

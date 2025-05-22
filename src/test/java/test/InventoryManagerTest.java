@@ -1,4 +1,4 @@
-package refai.project.test;
+package test;
 import refai.project.manager.InventoryManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
