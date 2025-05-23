@@ -40,6 +40,7 @@ public class CookingTask {
         this.scheduledTime = formatter.parse(scheduledTimeStr);
     }
 
+
     public String getTaskId() {
         return taskId;
     }

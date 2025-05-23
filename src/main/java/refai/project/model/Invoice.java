@@ -28,7 +28,7 @@ public class Invoice {
         this.invoiceId = "INV-" + System.currentTimeMillis();
     }
 
-    // Getters and Setters
+    //getters and setters
     public String getInvoiceId() {
         return invoiceId;
     }

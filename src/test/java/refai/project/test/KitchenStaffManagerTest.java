@@ -65,8 +65,17 @@ class KitchenStaffManagerTest {
 
     @Test
     void addPreparationRequirement_shouldNotAddForInvalidTask() {
-        manager.addPreparationRequirement("invalid-task-id", "Prep veggies", "Chop all vegetables");
-        // Verify no exception thrown
+        KitchenStaffManager manager = new KitchenStaffManager();
+        String invalidTaskId = "invalid-task-123";
+        String requirement = "Chop vegetables";
+        String details = "Chop all vegetables 30 mins before cooking";
+
+        manager.addPreparationRequirement(invalidTaskId, requirement, details);
+
+        //assert
+        //verify no requirements were added for invalid task
+        assertTrue(manager.getPreparationRequirements(invalidTaskId).isEmpty(),
+                "No requirements should be added for invalid task");
     }
 
     @Test
@@ -153,4 +162,5 @@ class KitchenStaffManagerTest {
         assertEquals(1, tasks.size());
         assertEquals("ORDER-1", tasks.get(0).getOrderId());
     }
+
 }
