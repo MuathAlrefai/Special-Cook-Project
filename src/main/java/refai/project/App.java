@@ -11,6 +11,19 @@ import java.util.logging.Logger;
 
 public class App {
     private static final Logger logger = Logger.getLogger(App.class.getName());
+    
+    //customer constants
+    private static final String CUSTOMER_BASIM = "Basim";
+    
+    //chef constants
+    private static final String CHEF_GORDON = "Gordon";
+    
+    //inventory constants
+    private static final String INGREDIENT_BROCCOLI = "Broccoli";
+    
+    //order constants
+    private static final String ORDER_1 = "ORDER-1";
+    private static final String ORDER_2 = "ORDER-2";
 
     public static void main(String[] args) {
         logger.info("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
@@ -30,14 +43,14 @@ public class App {
         //register customers
         logger.info("Registering customers...");
         customerManager.registerCustomer("Amal");
-        customerManager.registerCustomer("Basim");
+        customerManager.registerCustomer(CUSTOMER_BASIM);
         customerManager.updatePreferences("Amal", "Vegetarian", "Dairy,Peanuts");
         customerManager.updateContactInfo("Amal", "amal@example.com", "555-123-4567", "123 Main St");
-        customerManager.updateContactInfo("Basim", "basim@example.com", "555-789-0123", "456 Oak Ave");
+        customerManager.updateContactInfo(CUSTOMER_BASIM, "basim@example.com", "555-789-0123", "456 Oak Ave");
 
         //register chefs
         logger.info("\nRegistering chefs...");
-        Chef chef1 = chefManager.registerChef("Gordon");
+        Chef chef1 = chefManager.registerChef(CHEF_GORDON);
         Chef chef2 = chefManager.registerChef("GordonJr");
         kitchenManager.addChef(chef1);
         kitchenManager.addChef(chef2);
@@ -48,9 +61,9 @@ public class App {
         inventoryManager.addIngredient("Rice", 100);
         inventoryManager.addIngredient("Spices", 25);
         inventoryManager.addIngredient("Tofu", 20);
-        inventoryManager.addIngredient("Broccoli", 20);
+        inventoryManager.addIngredient(INGREDIENT_BROCCOLI, 20);
         inventoryManager.setThreshold("Chicken", 40);
-        inventoryManager.setThreshold("Broccoli", 20);
+        inventoryManager.setThreshold(INGREDIENT_BROCCOLI, 20);
         inventoryManager.setThreshold("Spices", 30);
 
         //check low stock and notify manager
@@ -64,10 +77,10 @@ public class App {
         //place customer orders
         logger.info("\nProcessing customer orders...");
         customerManager.placeOrder("Amal", "Tofu Stir Fry");
-        customerManager.placeOrder("Basim", "Chicken Rice Bowl");
+        customerManager.placeOrder(CUSTOMER_BASIM, "Chicken Rice Bowl");
 
         //request custom meal
-        List<String> customIngredients = new ArrayList<>(Arrays.asList("Tofu", "Broccoli", "Rice"));
+        List<String> customIngredients = new ArrayList<>(Arrays.asList("Tofu", INGREDIENT_BROCCOLI, "Rice"));
         customerManager.requestCustomMeal("Amal", customIngredients);
 
         //schedule cooking tasks
@@ -76,10 +89,10 @@ public class App {
 
         try {
             //schedule regular cooking tasks
-            CookingTask task1 = chefManager.scheduleCookingTask("Gordon", "ORDER-1", "2025-05-23 10:00:00");
+            CookingTask task1 = chefManager.scheduleCookingTask(CHEF_GORDON, ORDER_1, "2025-05-23 10:00:00");
             chefManager.addPreparationRequirement(task1.getTaskId(), "Veggie Bowl", "Prep vegetables 30 min before");
 
-            CookingTask task2 = chefManager.scheduleCookingTask("GordonJr", "ORDER-2", "2025-05-23 11:30:00");
+            CookingTask task2 = chefManager.scheduleCookingTask("GordonJr", ORDER_2, "2025-05-23 11:30:00");
             chefManager.addPreparationRequirement(task2.getTaskId(), "Sauce preparation", "Prepare special sauce");
 
             //create an urgent task
@@ -92,13 +105,13 @@ public class App {
             //send daily schedule to chefs
             logger.info("\nSending daily schedules to chefs...");
             Date scheduleDate = sdf.parse("2025-05-23 00:00:00");
-            List<CookingTask> gordonTasks = chefManager.getTasksForDate("Gordon", scheduleDate);
+            List<CookingTask> gordonTasks = chefManager.getTasksForDate(CHEF_GORDON, scheduleDate);
             notificationManager.sendDailySchedule(chef1, gordonTasks, scheduleDate);
 
             //schedule deliveries
             logger.info("\nScheduling deliveries...");
-            Delivery delivery1 = deliveryManager.scheduleDelivery("Amal", "ORDER-1", "2025-05-23 12:30:00");
-            Delivery delivery2 = deliveryManager.scheduleDelivery("Basim", "ORDER-2", "2025-05-23 13:45:00");
+            Delivery delivery1 = deliveryManager.scheduleDelivery("Amal", ORDER_1, "2025-05-23 12:30:00");
+            Delivery delivery2 = deliveryManager.scheduleDelivery(CUSTOMER_BASIM, ORDER_2, "2025-05-23 13:45:00");
 
             //schedule delivery reminders
             logger.info("\nSetting up delivery reminders...");
@@ -107,18 +120,18 @@ public class App {
 
             //generate and send invoices
             logger.info("\nGenerating invoices...");
-            Order order1 = new Order("ORDER-1", "Amal");
+            Order order1 = new Order(ORDER_1, "Amal");
             order1.addItem(new OrderItem("ITEM-1", "Tofu Stir Fry", 1, 15.99));
 
-            Order order2 = new Order("ORDER-2", "Basim");
+            Order order2 = new Order(ORDER_2, CUSTOMER_BASIM);
             order2.addItem(new OrderItem("ITEM-2", "Chicken Rice Bowl", 1, 12.99));
 
-            Invoice invoice1 = invoiceManager.generateInvoice("Amal", "ORDER-1", order1);
-            Invoice invoice2 = invoiceManager.generateInvoice("Basim", "ORDER-2", order2);
+            Invoice invoice1 = invoiceManager.generateInvoice("Amal", ORDER_1, order1);
+            Invoice invoice2 = invoiceManager.generateInvoice(CUSTOMER_BASIM, ORDER_2, order2);
 
             //add invoices to customer records
             customerManager.addInvoiceToCustomer("Amal", invoice1);
-            customerManager.addInvoiceToCustomer("Basim", invoice2);
+            customerManager.addInvoiceToCustomer(CUSTOMER_BASIM, invoice2);
 
             //send invoices
             invoiceManager.sendInvoice(invoice1, amal);
