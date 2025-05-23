@@ -14,7 +14,7 @@ public class Administrator {
         this.role = role;
     }
 
-    // Getters and Setters
+    //getters and setters
     public String getAdminId() {
         return adminId;
     }

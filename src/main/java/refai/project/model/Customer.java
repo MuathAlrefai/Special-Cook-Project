@@ -12,7 +12,6 @@ public class Customer
     private String allergies;
     private List<String> customMealIngredients;
 
-    // New fields for billing system
     private String email;
     private String phone;
     private String address;
@@ -22,7 +21,7 @@ public class Customer
     {
         if (name == null || name.trim().isEmpty())
         {
-            throw new IllegalArgumentException("*** Error: Invalid customer name.");
+            throw new IllegalArgumentException("Error: Invalid customer name.");
         }
         this.name = name;
         this.customerId = "CUST-" + System.currentTimeMillis();
@@ -30,7 +29,7 @@ public class Customer
         this.allergies = "";
         this.orderHistory = new ArrayList<>();
         this.customMealIngredients = new ArrayList<>();
-        this.preferredInvoiceFormat = "PDF"; // Default format
+        this.preferredInvoiceFormat = "PDF"; 
     }
 
     public String getName()
@@ -82,8 +81,6 @@ public class Customer
     {
         return customMealIngredients;
     }
-
-    // Billing system methods
 
     public String getEmail()
     {

@@ -14,7 +14,7 @@ public class CustomerManager {
         "Chicken", "Rice", "Spices",
         "Tofu", "Broccoli", "Carrots",
         "Beef", "Milk", "Fish", "Tomato",
-        "Peanuts", "Almond", "Egg", "Garlic", "lemon"
+        "Peanuts"
     );
 
     private boolean incompatibleCombinationDetected = false;
@@ -24,11 +24,11 @@ public class CustomerManager {
 
     public boolean registerCustomer(String name) {
         if (name == null || name.trim().isEmpty()) {
-            System.out.println("*** Error: Invalid customer name...");
+            System.out.println("**Error: Invalid customer name...");
             return false;
         }
         if (customers.containsKey(name)) {
-            System.out.println("*** Customer already exists...");
+            System.out.println("**Customer already exists...");
             return false;
         }
         customers.put(name, new Customer(name));
@@ -39,7 +39,7 @@ public class CustomerManager {
     public boolean updatePreferences(String name, String dietaryPreferences, String allergies) {
         Customer customer = customers.get(name);
         if (customer == null) {
-            System.out.println("*** Error: Customer not found.");
+            System.out.println("**Error: Customer not found.");
             return false;
         }
         customer.setDietaryPreferences(dietaryPreferences);
@@ -58,7 +58,7 @@ public class CustomerManager {
     public String[] getCustomerPrefrences(String name) {
         Customer customer = customers.get(name);
         if (customer == null) {
-            System.out.println("*** Error: Customer not found.");
+            System.out.println("**Error: Customer not found.");
             return null;
         }
         return new String[]{customer.getDietaryPreferences(), customer.getAllergies()};
@@ -67,7 +67,7 @@ public class CustomerManager {
     public boolean placeOrder(String customerName, String mealName) {
         Customer customer = customers.get(customerName);
         if (customer == null || mealName == null || mealName.trim().isEmpty()) {
-            System.out.println("*** Error: Customer or meal name invalid.");
+            System.out.println("**Error: Customer or meal name invalid.");
             return false;
         }
         customer.addOrder(mealName);
@@ -77,7 +77,7 @@ public class CustomerManager {
     public List<String> getOrderHistory(String customerName) {
         Customer customer = customers.get(customerName);
         if (customer == null) {
-            System.out.println("*** Error: Customer not found.");
+            System.out.println("**Error: Customer not found.");
             return null;
         }
         return customer.getOrderHistory();
@@ -86,18 +86,18 @@ public class CustomerManager {
     public boolean reorderMeal(String customerName, String mealName) {
         Customer customer = customers.get(customerName);
         if (customer == null || !customer.getOrderHistory().contains(mealName)) {
-            System.out.println("*** Error: Invalid customer or meal.");
+            System.out.println("**Error: Invalid customer or meal.");
             return false;
         }
         customer.addOrder(mealName);
-        System.out.println("*** Meal reordered successfully for " + customerName + ": " + mealName);
+        System.out.println("**Meal reordered successfully for " + customerName + ": " + mealName);
         return true;
     }
 
     public boolean requestCustomMeal(String customerName, List<String> ingredients) {
         Customer customer = customers.get(customerName);
         if (customer == null) {
-            System.out.println("*** Error: Customer not found.");
+            System.out.println("**Error: Customer not found.");
             return false;
         }
 
@@ -107,16 +107,16 @@ public class CustomerManager {
         ingredientUnavailable = false;
 
         if (ingredients == null || ingredients.isEmpty()) {
-            System.out.println("*** Error: No ingredients provided.");
+            System.out.println("**Error: No ingredients provided.");
             emptyIngredientsProvided = true;
             return false;
         }
 
-        System.out.println("*** Ingredients received: " + ingredients);
+        System.out.println("**Ingredients received: " + ingredients);
 
         for (String ingredient : ingredients) {
             if (!availableIngredients.contains(ingredient)) {
-                System.out.println("*** Ingredient not available: " + ingredient);
+                System.out.println("**Ingredient not available: " + ingredient);
                 ingredientUnavailable = true;
                 return false;
             }
@@ -125,7 +125,7 @@ public class CustomerManager {
                 List<String> allergyList = Arrays.asList(customer.getAllergies().split(","));
                 for (String allergy : allergyList) {
                     if (ingredient.equalsIgnoreCase(allergy.trim())) {
-                        System.out.println("*** Ingredient conflicts with allergy: " + ingredient);
+                        System.out.println("**Ingredient conflicts with allergy: " + ingredient);
                         allergyConflictDetected = true;
                         customer.setCustomMealIngredients(new ArrayList<>());
                         return false;
@@ -140,7 +140,7 @@ public class CustomerManager {
         }
 
         customer.setCustomMealIngredients(ingredients);
-        System.out.println("*** Custom meal saved for " + customerName);
+        System.out.println("Custom meal saved for " + customerName);
         return true;
     }
 
@@ -178,7 +178,7 @@ public class CustomerManager {
             return alternatives;
         }
 
-        List<String> allergyList;
+        List<String> allergyList = new ArrayList<>();
         if (customer.getAllergies() != null && !customer.getAllergies().isEmpty()) {
             allergyList = Arrays.asList(customer.getAllergies().split(","));
             for (String allergen : allergyList) {
@@ -223,7 +223,7 @@ public class CustomerManager {
     public boolean updateContactInfo(String name, String email, String phone, String address) {
         Customer customer = customers.get(name);
         if (customer == null) {
-            System.out.println("*** Error: Customer not found.");
+            System.out.println("**Error: Customer not found.");
             return false;
         }
         customer.setEmail(email);
@@ -235,7 +235,7 @@ public class CustomerManager {
     public boolean setPreferredInvoiceFormat(String name, String format) {
         Customer customer = customers.get(name);
         if (customer == null) {
-            System.out.println("*** Error: Customer not found.");
+            System.out.println("**Error: Customer not found.");
             return false;
         }
         customer.setPreferredInvoiceFormat(format);
@@ -245,15 +245,15 @@ public class CustomerManager {
     public void addInvoiceToCustomer(String name, Invoice invoice) {
         if (customers.containsKey(name)) {
             customerInvoices.computeIfAbsent(name, k -> new ArrayList<>()).add(invoice);
-            System.out.println("*** Invoice added to customer: " + name);
+            System.out.println("**Invoice added to customer: " + name);
         } else {
-            System.out.println("*** Error: Cannot add invoice - customer not found.");
+            System.out.println("**Error: Cannot add invoice - customer not found.");
         }
     }
 
     public List<Invoice> getCustomerInvoices(String name) {
         if (!customerInvoices.containsKey(name)) {
-            System.out.println("*** No invoices found for customer: " + name);
+            System.out.println("**No invoices found for customer: " + name);
             return new ArrayList<>();
         }
         return customerInvoices.get(name);

@@ -9,7 +9,7 @@ public class Delivery {
     private String orderId;
     private String customerId;
     private Date scheduledTime;
-    private String status; // "SCHEDULED", "IN_PROGRESS", "DELIVERED", "CANCELLED"
+    private String status;
     private boolean isSpecialOrder;
 
     public Delivery() {
@@ -17,6 +17,13 @@ public class Delivery {
         this.status = "SCHEDULED";
         this.isSpecialOrder = false;
     }
+    
+    public Delivery(String orderId, Date scheduledTime) {
+        this();
+        this.orderId = orderId;
+        this.scheduledTime = scheduledTime;
+    }
+
 
     public Delivery(String customerId, String orderId, Date scheduledTime) {
         this();

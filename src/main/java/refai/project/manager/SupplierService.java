@@ -36,7 +36,9 @@ public class SupplierService {
     }
 
     private void generatePurchaseOrder(String item, int orderQuantity) {
-        purchaseOrders.computeIfAbsent(item, k -> new PurchaseOrder(item, orderQuantity));
+        // Create and add the PurchaseOrder to the map
+        if (!purchaseOrders.containsKey(item)) {
+            purchaseOrders.put(item, new PurchaseOrder(item, orderQuantity));
+        }
     }
-
 }

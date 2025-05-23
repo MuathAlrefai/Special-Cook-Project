@@ -17,7 +17,7 @@ public class InvoiceManager {
     public Invoice generateInvoice(String customerId, String orderId, Order order) {
         Invoice invoice = new Invoice(customerId, orderId);
 
-        // Convert OrderItems to InvoiceItems
+        //convert OrderItems to InvoiceItems
         for (OrderItem orderItem : order.getItems()) {
             InvoiceItem invoiceItem = new InvoiceItem(
                     orderItem.getProductId(),
@@ -38,7 +38,7 @@ public class InvoiceManager {
         Invoice invoice = invoices.get(invoiceId);
 
         if (invoice != null) {
-            // Update invoice items based on modified order
+            //update invoice items based on modified order
             invoice.setItems(modifiedOrder.getItems().stream()
                     .map(orderItem -> new InvoiceItem(
                             orderItem.getProductId(),
@@ -59,16 +59,16 @@ public class InvoiceManager {
     }
 
     public boolean sendInvoice(Invoice invoice, Customer customer) {
-        // In a real implementation, this would send the invoice via email or other means
-        // Set the format based on customer preference
+        //in a real implementation, this would send the invoice via email or other means
+        //set the format based on customer preference
         invoice.setFormat(customer.getPreferredInvoiceFormat());
 
-        // Only change the status to SENT if it's not already UPDATED
+        //only change the status to SENT if it's not already UPDATED
         if (!"UPDATED".equals(invoice.getStatus())) {
             invoice.setStatus("SENT");
         }
 
-        // Return true to indicate successful sending
+        //return true to indicate successful sending
         return true;
     }
 

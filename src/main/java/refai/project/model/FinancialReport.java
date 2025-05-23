@@ -16,7 +16,7 @@ public class FinancialReport {
     public FinancialReport() {
         this.entries = new ArrayList<>();
         this.generatedDate = new Date();
-        this.format = "CSV"; // Default format
+        this.format = "CSV"; 
     }
 
     public FinancialReport(String reportType, Date startDate, Date endDate) {
@@ -27,7 +27,6 @@ public class FinancialReport {
         this.reportId = "REP-" + System.currentTimeMillis();
     }
 
-    // Getters and Setters
     public String getReportId() {
         return reportId;
     }

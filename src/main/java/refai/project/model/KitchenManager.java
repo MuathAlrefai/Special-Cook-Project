@@ -3,7 +3,7 @@ package refai.project.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class    KitchenManager {
+public class KitchenManager {
     private String name;
     private String email;
     private List<Notification> notifications;

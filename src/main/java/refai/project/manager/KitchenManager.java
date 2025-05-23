@@ -2,23 +2,22 @@ package refai.project.manager;
 
 import refai.project.model.Chef;
 import refai.project.model.Notification;
-import java.util.stream.Collectors;
 
 import java.util.*;
 
 public class KitchenManager {
 
-    private final String name;
+    private String name; 
     private final List<Chef> chefs = new ArrayList<>();
     private final List<Notification> notifications = new ArrayList<>();
 
     public KitchenManager(String name) {
         this.name = name;
     }
+
     public KitchenManager() {
         this.name = "Default Kitchen";
     }
-
 
     public void addChef(Chef chef) {
         chefs.add(chef);
@@ -27,7 +26,7 @@ public class KitchenManager {
     public Chef assignTask(String taskType) {
         List<Chef> available = chefs.stream()
                 .filter(Chef::isAvailable)
-                .collect(Collectors.toList());
+                .toList();
 
         for (Chef chef : available) {
             if (chef.getExpertise().equalsIgnoreCase(taskType)) {
@@ -51,6 +50,10 @@ public class KitchenManager {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void addNotification(Notification notification) {

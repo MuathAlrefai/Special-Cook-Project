@@ -11,17 +11,17 @@ public class CookingTask {
     private String orderId;
     private String chefId;
     private Date scheduledTime;
-    private int estimatedDuration; // In minutes
-    private String status; // "SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"
+    private int estimatedDuration; 
+    private String status;
     private boolean isUrgent;
     private Map<String, String> preparationRequirements;
 
     public CookingTask() {
-        this.taskId = "TASK-" + System.currentTimeMillis();
+    	this.taskId = "TASK-" + java.util.UUID.randomUUID();
         this.status = "SCHEDULED";
         this.isUrgent = false;
         this.preparationRequirements = new HashMap<>();
-        this.estimatedDuration = 60; // Default 60 minutes
+        this.estimatedDuration = 60; 
     }
 
     public CookingTask(String chefId, String orderId, Date scheduledTime) {
@@ -105,5 +105,9 @@ public class CookingTask {
 
     public void addPreparationRequirement(String item, String details) {
         this.preparationRequirements.put(item, details);
+    }
+
+    public Date getCookingTime() {
+        return scheduledTime;
     }
 }

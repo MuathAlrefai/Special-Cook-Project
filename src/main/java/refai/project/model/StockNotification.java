@@ -16,7 +16,7 @@ public class StockNotification extends Notification {
         this.setRecipientType(recipientType);
         this.setSubject(subject);
         this.setContent(content);
-        this.setScheduledTime(new Date()); // Send immediately
+        this.setScheduledTime(new Date()); 
         this.setChannel(channel);
         this.setPriority("HIGH");
         this.setStatus("PENDING");

@@ -36,7 +36,7 @@ public class Order {
                 .sum();
     }
 
-    // Getters and Setters
+    //getters and setters
     public String getOrderId() {
         return orderId;
     }

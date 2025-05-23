@@ -2,10 +2,10 @@ package refai.project.model;
 
 public class NotificationPreference {
     private String userId;
-    private String userType; // "CUSTOMER" or "CHEF"
-    private String channel; // "EMAIL", "SMS", "APP"
+    private String userType; 
+    private String channel;
     private boolean enabled;
-    private int timingHours; // Hours before event
+    private int timingHours; 
 
     public NotificationPreference(String userId, String userType, String channel, boolean enabled, int timingHours) {
         this.userId = userId;

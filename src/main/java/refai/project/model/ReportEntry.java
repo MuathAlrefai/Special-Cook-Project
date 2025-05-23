@@ -28,7 +28,7 @@ public class ReportEntry {
         }
     }
 
-    // Getters and Setters
+    //getters and setters
     public String getCategory() {
         return category;
     }

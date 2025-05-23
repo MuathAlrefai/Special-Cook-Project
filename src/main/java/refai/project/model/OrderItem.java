@@ -16,7 +16,7 @@ public class OrderItem {
         this.unitPrice = unitPrice;
     }
 
-    // Getters and Setters
+    //getters and setters
     public String getProductId() {
         return productId;
     }

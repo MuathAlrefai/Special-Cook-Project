@@ -5,15 +5,15 @@ import java.util.Date;
 public class Notification {
     private String notificationId;
     private String recipientId;
-    private String recipientType; // "CUSTOMER" or "CHEF"
+    private String recipientType; 
     private String subject;
     private String content;
-    private String priority; // "NORMAL", "URGENT"
-    private String status; // "PENDING", "SENT", "READ", "FAILED"
+    private String priority; 
+    private String status; 
     private Date creationTime;
     private Date scheduledTime;
     private Date sentTime;
-    private String channel; // "EMAIL", "SMS", "APP"
+    private String channel; 
     private boolean requiresConfirmation;
 
     public Notification() {

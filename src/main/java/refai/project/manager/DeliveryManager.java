@@ -1,7 +1,6 @@
 package refai.project.manager;
 
 import refai.project.model.Delivery;
-import refai.project.model.Customer;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ public class DeliveryManager {
             deliveries.put(delivery.getDeliveryId(), delivery);
             return delivery;
         } catch (ParseException e) {
-            System.out.println("*** Error: Invalid date format - " + e.getMessage());
+            System.out.println("Error: Invalid date format - " + e.getMessage());
             return null;
         }
     }
