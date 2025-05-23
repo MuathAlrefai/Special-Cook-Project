@@ -1,76 +1,72 @@
 package refai.project.test;
 
-import refai.project.manager.InvoiceManager;
-import refai.project.model.Customer;
-import refai.project.model.Invoice;
-import refai.project.model.Order;
-import refai.project.model.OrderItem;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import refai.project.manager.InvoiceManager;
+import refai.project.model.*;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class InvoiceManagerTest {
+class InvoiceManagerTest {
+    private InvoiceManager invoiceManager;
+    private Customer customer;
+    private Order order;
+
+    @BeforeEach
+    void setUp() {
+        invoiceManager = new InvoiceManager();
+        customer = new Customer("CUST-001");
+        customer.setPreferredInvoiceFormat("PDF");
+
+        OrderItem item1 = new OrderItem("ITEM-1", "Tofu Stir Fry", 1, 15.99);
+        OrderItem item2 = new OrderItem("ITEM-2", "Green Tea", 2, 3.50);
+        order = new Order("ORDER-001", "CUST-001");
+        order.setItems(Arrays.asList(item1, item2));
+        // Total amount should be calculated as (15.99 + (2 * 3.50)) = 22.99
+    }
 
     @Test
-    public void testGenerateInvoice() {
-        InvoiceManager invoiceManager = new InvoiceManager();
-
-        OrderItem item = new OrderItem("1", "Pizza", 2, 10.0);
-
-        Order order = new Order("ORDER123", "CUSTOMER001");
-        order.addItem(item); 
-
-        Invoice invoice = invoiceManager.generateInvoice("CUSTOMER001", "ORDER123", order);
+    void generateInvoice_shouldCreateValidInvoice() {
+        Invoice invoice = invoiceManager.generateInvoice("CUST-001", "ORDER-001", order);
 
         assertNotNull(invoice);
-        assertEquals("CUSTOMER001", invoice.getCustomerId());
-        assertEquals("ORDER123", invoice.getOrderId());
-        assertEquals(20.0, invoice.getTotalAmount(), 0.001);
-        assertEquals(1, invoice.getItems().size());
+        assertEquals("CUST-001", invoice.getCustomerId());
+        assertEquals(2, invoice.getItems().size());
+        assertEquals(22.99, invoice.getTotalAmount(), 0.001); // Using delta for double comparison
     }
-    
+
     @Test
-    public void testUpdateInvoice_Success() {
-        InvoiceManager invoiceManager = new InvoiceManager();
+    void updateInvoice_shouldUpdateExistingInvoice() {
+        Invoice original = invoiceManager.generateInvoice("CUST-001", "ORDER-001", order);
 
-        Order originalOrder = new Order("ORDER1", "CUSTOMER001");
-        originalOrder.addItem(new OrderItem("1", "Burger", 1, 8.0));
-        Invoice invoice = invoiceManager.generateInvoice("CUSTOMER001", "ORDER1", originalOrder);
-        String invoiceId = invoice.getInvoiceId();
+        // Modify order
+        Order modifiedOrder = new Order("ORDER-001", "CUST-001");
+        modifiedOrder.setItems(List.of(
+                new OrderItem("ITEM-1", "Tofu Stir Fry", 2, 15.99) // Quantity changed to 2
+        ));
+        // New total should be (2 * 15.99) = 31.98
 
-        Order modifiedOrder = new Order("ORDER1", "CUSTOMER001");
-        modifiedOrder.addItem(new OrderItem("2", "Juice", 2, 5.0)); 
+        Invoice updated = invoiceManager.updateInvoice(original.getInvoiceId(), modifiedOrder);
 
-        Invoice updatedInvoice = invoiceManager.updateInvoice(invoiceId, modifiedOrder);
-
-        assertNotNull(updatedInvoice);
-        assertEquals(10.0, updatedInvoice.getTotalAmount(), 0.001);
-        assertEquals("UPDATED", updatedInvoice.getStatus());
-        assertEquals(1, updatedInvoice.getItems().size());
-        assertEquals("Juice", updatedInvoice.getItems().get(0).getProductName());
+        assertNotNull(updated);
+        assertEquals("UPDATED", updated.getStatus());
+        assertEquals(1, updated.getItems().size());
+        assertEquals(31.98, updated.getTotalAmount(), 0.001);
+        assertNotNull(updated.getModifiedDate());
     }
-    
+
     @Test
-    public void testUpdateInvoice_NotFound() {
-        InvoiceManager invoiceManager = new InvoiceManager();
-
-        Order modifiedOrder = new Order("fakeOrder", "CUSTOMERX");
-        modifiedOrder.addItem(new OrderItem("99", "Unknown", 1, 1.0));
-
-        Invoice result = invoiceManager.updateInvoice("invalid-invoice-id", modifiedOrder);
+    void updateInvoice_shouldReturnNullForInvalidId() {
+        Invoice result = invoiceManager.updateInvoice("INVALID-ID", order);
         assertNull(result);
     }
-    
+
     @Test
-    public void testSendInvoice_StatusSent() {
-        InvoiceManager invoiceManager = new InvoiceManager();
-
-        Order order = new Order("ORDER1", "CUSTOMER001");
-        order.addItem(new OrderItem("1", "Pizza", 1, 10.0));
-        Invoice invoice = invoiceManager.generateInvoice("CUSTOMER001", "ORDER1", order);
-
-        Customer customer = new Customer("CUSTOMER001");
-        customer.setPreferredInvoiceFormat("PDF");
+    void sendInvoice_shouldSetFormatAndStatus() {
+        Invoice invoice = invoiceManager.generateInvoice("CUST-001", "ORDER-001", order);
 
         boolean result = invoiceManager.sendInvoice(invoice, customer);
 
@@ -78,42 +74,27 @@ public class InvoiceManagerTest {
         assertEquals("PDF", invoice.getFormat());
         assertEquals("SENT", invoice.getStatus());
     }
-    
+
     @Test
-    public void testSendInvoice_StatusRemainsUpdated() {
-        InvoiceManager invoiceManager = new InvoiceManager();
-
-        Order order = new Order("ORDER1", "CUSTOMER002");
-        order.addItem(new OrderItem("2", "Pasta", 2, 7.5));
-        Invoice invoice = invoiceManager.generateInvoice("CUSTOMER002", "ORDER1", order);
-
+    void sendInvoice_shouldNotChangeUpdatedStatus() {
+        Invoice invoice = invoiceManager.generateInvoice("CUST-001", "ORDER-001", order);
         invoice.setStatus("UPDATED");
-
-        Customer customer = new Customer("CUSTOMER002");
-        customer.setPreferredInvoiceFormat("HTML");
 
         boolean result = invoiceManager.sendInvoice(invoice, customer);
 
         assertTrue(result);
-        assertEquals("HTML", invoice.getFormat());
-        assertEquals("UPDATED", invoice.getStatus()); 
+        assertEquals("UPDATED", invoice.getStatus());
     }
-    
+
     @Test
-    public void testGetInvoice() {
-        InvoiceManager invoiceManager = new InvoiceManager();
-
-        Order order = new Order("ORDERX", "CUSTOMER007");
-        order.addItem(new OrderItem("7", "Soup", 1, 4.0));
-        Invoice invoice = invoiceManager.generateInvoice("CUSTOMER007", "ORDERX", order);
-
-        Invoice retrieved = invoiceManager.getInvoice(invoice.getInvoiceId());
-        assertNotNull(retrieved);
-        assertEquals(invoice.getInvoiceId(), retrieved.getInvoiceId());
+    void getInvoice_shouldReturnInvoiceWhenExists() {
+        Invoice expected = invoiceManager.generateInvoice("CUST-001", "ORDER-001", order);
+        Invoice actual = invoiceManager.getInvoice(expected.getInvoiceId());
+        assertEquals(expected, actual);
     }
 
-
-
-
-
+    @Test
+    void getInvoice_shouldReturnNullWhenNotExists() {
+        assertNull(invoiceManager.getInvoice("NON-EXISTENT"));
+    }
 }

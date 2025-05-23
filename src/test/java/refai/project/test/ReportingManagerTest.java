@@ -1,9 +1,9 @@
 package refai.project.test;
 
+import org.junit.jupiter.api.Test;
 import refai.project.manager.ReportingManager;
 import refai.project.model.FinancialReport;
 import refai.project.model.ReportEntry;
-import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -11,51 +11,69 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ReportingManagerTest {
-
-    private final ReportingManager manager = new ReportingManager();
+class ReportingManagerTest {
+    private ReportingManager reportingManager = new ReportingManager();
 
     @Test
-    public void testGenerateMonthlyRevenueReport() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(2024, Calendar.MARCH, 15); // Arbitrary date in March
-        Date testDate = cal.getTime();
+    void generateMonthlyRevenueReport_shouldReturnValidReport() {
+        Date testDate = new Date();
+        FinancialReport report = reportingManager.generateMonthlyRevenueReport(testDate);
 
-        FinancialReport report = manager.generateMonthlyRevenueReport(testDate);
         assertNotNull(report);
         assertEquals("MONTHLY_REVENUE", report.getReportType());
+        assertEquals(4, report.getEntries().size());
 
         List<ReportEntry> entries = report.getEntries();
-        assertEquals(4, entries.size());
         assertTrue(entries.stream().anyMatch(e -> e.getCategory().equals("Special Dishes")));
     }
 
     @Test
-    public void testGenerateQuarterlyComparisonReport() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(2024, Calendar.JANUARY, 5); // Within Q1
-        Date testQuarter = cal.getTime();
+    void generateQuarterlyComparisonReport_shouldContainComparisonData() {
+        Date testDate = new Date();
+        FinancialReport report = reportingManager.generateQuarterlyComparisonReport(testDate);
 
-        FinancialReport report = manager.generateQuarterlyComparisonReport(testQuarter);
         assertNotNull(report);
         assertEquals("QUARTERLY_COMPARISON", report.getReportType());
         assertEquals(4, report.getEntries().size());
+
+        ReportEntry firstEntry = report.getEntries().get(0);
+        assertTrue(firstEntry.getValue() > 0);
+        assertTrue(firstEntry.getComparisonValue() > 0);
     }
 
     @Test
-    public void testGenerateCustomerSpendingReport() {
+    void generateCustomerSpendingReport_shouldIncludeMarketingOpportunities() {
         Calendar cal = Calendar.getInstance();
-        cal.set(2024, Calendar.FEBRUARY, 1);
-        Date start = cal.getTime();
-        cal.set(2024, Calendar.FEBRUARY, 28);
-        Date end = cal.getTime();
+        Date startDate = cal.getTime();
+        cal.add(Calendar.MONTH, 6);
+        Date endDate = cal.getTime();
 
-        FinancialReport report = manager.generateCustomerSpendingReport(start, end);
+        FinancialReport report = reportingManager.generateCustomerSpendingReport(startDate, endDate);
+
         assertNotNull(report);
         assertEquals("CUSTOMER_SPENDING", report.getReportType());
+        assertEquals(5, report.getEntries().size()); // 3 customer segments + 2 opportunities
 
-        List<ReportEntry> entries = report.getEntries();
-        assertEquals(5, entries.size());
-        assertTrue(entries.stream().anyMatch(e -> e.getCategory().equals("Marketing")));
+        long marketingEntries = report.getEntries().stream()
+                .filter(e -> e.getCategory().equals("Marketing"))
+                .count();
+        assertEquals(2, marketingEntries);
+    }
+
+    @Test
+    void reportDates_shouldBeCorrectForMonthlyReport() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(2023, Calendar.MAY, 15);
+        Date testDate = cal.getTime();
+
+        FinancialReport report = reportingManager.generateMonthlyRevenueReport(testDate);
+
+        cal.set(2023, Calendar.MAY, 1);
+        Date expectedStart = cal.getTime();
+        cal.set(2023, Calendar.MAY, 31);
+        Date expectedEnd = cal.getTime();
+
+        assertEquals(expectedStart, report.getStartDate());
+        assertEquals(expectedEnd, report.getEndDate());
     }
 }

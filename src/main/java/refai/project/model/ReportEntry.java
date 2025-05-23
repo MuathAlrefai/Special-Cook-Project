@@ -66,4 +66,5 @@ public class ReportEntry {
     public double getGrowthPercentage() {
         return growthPercentage;
     }
+
 }
