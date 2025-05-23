@@ -7,6 +7,24 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class NotificationManager {
+    //notification message constants
+    private static final String NOTIFICATION_SENT_PREFIX = "Notification sent to ";
+    private static final String NOTIFICATION_VIA = " via ";
+    private static final String NOTIFICATION_SUBJECT_SEPARATOR = ": ";
+
+    //recipient type constants
+    private static final String RECIPIENT_TYPE_CUSTOMER = "CUSTOMER";
+    private static final String RECIPIENT_TYPE_CHEF = "CHEF";
+
+    //priority constants
+    private static final String PRIORITY_NORMAL = "NORMAL";
+    private static final String PRIORITY_URGENT = "URGENT";
+
+    //channel constants
+    private static final String CHANNEL_EMAIL = "EMAIL";
+    private static final String CHANNEL_SMS = "SMS";
+    private static final String CHANNEL_APP = "APP";
+
     private Map<String, Notification> notifications = new HashMap<>();
     private Map<String, List<NotificationPreference>> userPreferences = new HashMap<>();
 
@@ -38,12 +56,12 @@ public class NotificationManager {
     }
 
     public boolean sendNotification(Notification notification) {
-
         notification.setStatus("SENT");
         notification.setSentTime(new Date());
 
-        System.out.println("Notification sent to " + notification.getRecipientId() +
-                " via " + notification.getChannel() + ": " + notification.getSubject());
+        System.out.println(NOTIFICATION_SENT_PREFIX + notification.getRecipientId() +
+                NOTIFICATION_VIA + notification.getChannel() +
+                NOTIFICATION_SUBJECT_SEPARATOR + notification.getSubject());
 
         return true;
     }
@@ -78,15 +96,16 @@ public class NotificationManager {
             System.out.println("Ready to send? " + isReadyToSend);
 
             if (isReadyToSend) {
-                System.out.println("Sending notification to " + notification.getRecipientId() + " via " + notification.getChannel());
+                System.out.println("Sending notification to " + notification.getRecipientId() +
+                        NOTIFICATION_VIA + notification.getChannel());
 
                 notification.setStatus("SENT");
                 notification.setSentTime(now);
                 sentNotifications.add(notification);
 
-                System.out.println("Notification sent to " + notification.getRecipientId() +
-                        " via " + notification.getChannel() + ": " +
-                        notification.getSubject());
+                System.out.println(NOTIFICATION_SENT_PREFIX + notification.getRecipientId() +
+                        NOTIFICATION_VIA + notification.getChannel() +
+                        NOTIFICATION_SUBJECT_SEPARATOR + notification.getSubject());
             } else {
                 System.out.println("Not yet time to send.");
             }
@@ -95,7 +114,6 @@ public class NotificationManager {
         System.out.println("\nTotal notifications sent: " + sentNotifications.size());
         return sentNotifications;
     }
-
 
     public List<Notification> scheduleDeliveryReminders(Customer customer, Delivery delivery) {
         List<Notification> scheduledReminders = new ArrayList<>();
@@ -118,12 +136,12 @@ public class NotificationManager {
 
                 Notification reminder = scheduleNotification(
                         customer.getName(),
-                        "CUSTOMER",
+                        RECIPIENT_TYPE_CUSTOMER,
                         "Upcoming Meal Delivery Reminder",
                         content,
                         reminderTime.getTime(),
                         pref.getChannel(),
-                        "NORMAL"
+                        PRIORITY_NORMAL
                 );
 
                 notifications.put(reminder.getNotificationId(), reminder);
@@ -157,12 +175,12 @@ public class NotificationManager {
         Notification immediateNotification = new Notification();
         immediateNotification.setNotificationId("NOTIF-IMM-" + System.currentTimeMillis());
         immediateNotification.setRecipientId(chef.getName());
-        immediateNotification.setRecipientType("CHEF");
+        immediateNotification.setRecipientType(RECIPIENT_TYPE_CHEF);
         immediateNotification.setSubject("Cooking Task Notification");
         immediateNotification.setContent(content);
         immediateNotification.setScheduledTime(immediate.getTime());
-        immediateNotification.setChannel("EMAIL");
-        immediateNotification.setPriority(cookingTask.isUrgent() ? "URGENT" : "NORMAL");
+        immediateNotification.setChannel(CHANNEL_EMAIL);
+        immediateNotification.setPriority(cookingTask.isUrgent() ? PRIORITY_URGENT : PRIORITY_NORMAL);
         immediateNotification.setStatus("PENDING");
 
         notifications.put(immediateNotification.getNotificationId(), immediateNotification);
@@ -175,11 +193,11 @@ public class NotificationManager {
         Notification twelveHourNotification = new Notification();
         twelveHourNotification.setNotificationId("NOTIF-12H-" + System.currentTimeMillis());
         twelveHourNotification.setRecipientId(chef.getName());
-        twelveHourNotification.setRecipientType("CHEF");
+        twelveHourNotification.setRecipientType(RECIPIENT_TYPE_CHEF);
         twelveHourNotification.setSubject("Upcoming Cooking Task Reminder");
         twelveHourNotification.setContent("Reminder: You have a cooking task in 12 hours. Order ID: " + orderId);
         twelveHourNotification.setScheduledTime(twelveHourBefore.getTime());
-        twelveHourNotification.setChannel("SMS");
+        twelveHourNotification.setChannel(CHANNEL_SMS);
         twelveHourNotification.setStatus("PENDING");
 
         notifications.put(twelveHourNotification.getNotificationId(), twelveHourNotification);
@@ -226,11 +244,11 @@ public class NotificationManager {
 
         return sendImmediateNotification(
                 chef.getName(),
-                "CHEF",
+                RECIPIENT_TYPE_CHEF,
                 "Daily Cooking Schedule for " + formatDateOnly(scheduleDate),
                 content.toString(),
-                "EMAIL", 
-                "NORMAL"
+                CHANNEL_EMAIL,
+                PRIORITY_NORMAL
         );
     }
 
@@ -284,17 +302,17 @@ public class NotificationManager {
 
     private List<NotificationPreference> getDefaultCustomerPreferences(String customerId) {
         List<NotificationPreference> defaults = new ArrayList<>();
-        defaults.add(new NotificationPreference(customerId, "CUSTOMER", "EMAIL", true, 24));
-        defaults.add(new NotificationPreference(customerId, "CUSTOMER", "SMS", true, 12));
-        defaults.add(new NotificationPreference(customerId, "CUSTOMER", "APP", true, 2));
+        defaults.add(new NotificationPreference(customerId, RECIPIENT_TYPE_CUSTOMER, CHANNEL_EMAIL, true, 24));
+        defaults.add(new NotificationPreference(customerId, RECIPIENT_TYPE_CUSTOMER, CHANNEL_SMS, true, 12));
+        defaults.add(new NotificationPreference(customerId, RECIPIENT_TYPE_CUSTOMER, CHANNEL_APP, true, 2));
         return defaults;
     }
 
     private List<NotificationPreference> getDefaultChefPreferences(String chefId) {
         List<NotificationPreference> defaults = new ArrayList<>();
-        defaults.add(new NotificationPreference(chefId, "CHEF", "EMAIL", true, 12));
-        defaults.add(new NotificationPreference(chefId, "CHEF", "SMS", true, 4));
-        defaults.add(new NotificationPreference(chefId, "CHEF", "APP", true, 24));
+        defaults.add(new NotificationPreference(chefId, RECIPIENT_TYPE_CHEF, CHANNEL_EMAIL, true, 12));
+        defaults.add(new NotificationPreference(chefId, RECIPIENT_TYPE_CHEF, CHANNEL_SMS, true, 4));
+        defaults.add(new NotificationPreference(chefId, RECIPIENT_TYPE_CHEF, CHANNEL_APP, true, 24));
         return defaults;
     }
 
@@ -326,6 +344,7 @@ public class NotificationManager {
         }
         return userNotifications;
     }
+
     public void debugNotificationsState() {
         System.out.println("Current notifications in manager: " + notifications.size());
         for (Notification notification : notifications.values()) {
@@ -334,6 +353,7 @@ public class NotificationManager {
                     ", Scheduled: " + notification.getScheduledTime());
         }
     }
+
     public void addTimedNotification(Notification notification) {
         if (notification == null) {
             System.out.println("Error: Cannot add null notification");
@@ -350,25 +370,18 @@ public class NotificationManager {
                 notification.getPriority()
         );
 
-      
         if (added != null) {
             added.setStatus(notification.getStatus());
-
-       
             added.setRequiresConfirmation(notification.isRequiresConfirmation());
 
-          
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             System.out.println("Successfully added timed notification for " +
                     notification.getRecipientId() + " at " +
                     formatter.format(notification.getScheduledTime()));
         }
     }
-   
-    
-    
-    public void sendToManager(KitchenManager manager, Notification notification)
-    {
+
+    public void sendToManager(KitchenManager manager, Notification notification) {
         manager.addNotification(notification);
 
         notifications.put(notification.getNotificationId(), notification);
@@ -376,11 +389,8 @@ public class NotificationManager {
         notification.setStatus("SENT");
         notification.setSentTime(new Date());
 
-        System.out.println("Notification sent to " + manager.getName() +
-                " via " + notification.getChannel() + ": " +
-                notification.getSubject());
+        System.out.println(NOTIFICATION_SENT_PREFIX + manager.getName() +
+                NOTIFICATION_VIA + notification.getChannel() +
+                NOTIFICATION_SUBJECT_SEPARATOR + notification.getSubject());
     }
-
-
-
 }
