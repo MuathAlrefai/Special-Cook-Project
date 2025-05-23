@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -85,5 +86,58 @@ public class CookingTaskTest
 
         assertEquals(1, task.getPreparationRequirements().size());
         assertEquals("Slice", task.getPreparationRequirements().get("Onions"));
+    }
+
+
+    @Test
+    public void testGetCookingTimeWithValidDuration() throws Exception {
+        CookingTask task = new CookingTask();
+        task.setScheduledTime(new Date());
+        task.setEstimatedDuration(30); // 30 minutes
+
+        //test
+        Date cookingTime = task.getCookingTime();
+
+        //verify
+        assertNotNull(cookingTime);
+        assertEquals(task.getScheduledTime().getTime() + TimeUnit.MINUTES.toMillis(30),
+                cookingTime.getTime());
+    }
+
+    @Test
+    public void testGetCookingTimeWithZeroDuration() {
+        CookingTask task = new CookingTask();
+        Date now = new Date();
+        task.setScheduledTime(now);
+        task.setEstimatedDuration(0);
+
+        //test & Verify
+        assertEquals(now, task.getCookingTime());
+    }
+
+    @Test
+    public void testGetCookingTimeWhenNoScheduledTime() {
+        CookingTask task = new CookingTask();
+        task.setScheduledTime(null);
+        task.setEstimatedDuration(30);
+
+        //test & Verify
+        assertNull(task.getCookingTime());
+    }
+
+    @Test
+    public void testGetCookingTimeWithNegativeDuration() {
+        CookingTask task = new CookingTask();
+        Date now = new Date();
+        task.setScheduledTime(now);
+        task.setEstimatedDuration(-10); //invalid duration
+
+        //test
+        Date result = task.getCookingTime();
+
+        //verify
+        assertNotNull(result);
+        assertEquals(now.getTime(), result.getTime()); //compare millis to avoid Date.toString() issues
+        assertNotSame(now, result); //verify it's a defensive copy
     }
 }

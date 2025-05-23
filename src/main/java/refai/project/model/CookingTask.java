@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class CookingTask {
     private String taskId;
@@ -108,9 +109,12 @@ public class CookingTask {
     }
 
     public Date getCookingTime() {
-        if (scheduledTime == null) return null;
-        //return estimated completion time based on scheduled time and duration
-        long endTimeMillis = scheduledTime.getTime() + ((long) estimatedDuration * 60 * 1000);
-        return new Date(endTimeMillis);
+        if (scheduledTime == null) {
+            return null;
+        }
+        if (estimatedDuration <= 0) {
+            return new Date(scheduledTime.getTime()); //return copy of scheduled time
+        }
+        return new Date(scheduledTime.getTime() + TimeUnit.MINUTES.toMillis(estimatedDuration));
     }
 }
