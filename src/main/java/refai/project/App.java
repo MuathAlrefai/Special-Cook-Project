@@ -7,12 +7,15 @@ import refai.project.model.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class App {
+    private static final Logger logger = Logger.getLogger(App.class.getName());
+
     public static void main(String[] args) {
-        System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
-        System.out.println("Special Cook Personal Management System");
-        System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+        logger.info("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+        logger.info("Special Cook Personal Management System");
+        logger.info("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
 
         //initialize managers
         CustomerManager customerManager = new CustomerManager();
@@ -25,7 +28,7 @@ public class App {
         ReportingManager reportingManager = new ReportingManager();
 
         //register customers
-        System.out.println("Registering customers...");
+        logger.info("Registering customers...");
         customerManager.registerCustomer("Amal");
         customerManager.registerCustomer("Basim");
         customerManager.updatePreferences("Amal", "Vegetarian", "Dairy,Peanuts");
@@ -33,14 +36,14 @@ public class App {
         customerManager.updateContactInfo("Basim", "basim@example.com", "555-789-0123", "456 Oak Ave");
 
         //register chefs
-        System.out.println("\nRegistering chefs...");
+        logger.info("\nRegistering chefs...");
         Chef chef1 = chefManager.registerChef("Gordon");
         Chef chef2 = chefManager.registerChef("GordonJr");
         kitchenManager.addChef(chef1);
         kitchenManager.addChef(chef2);
 
         //add ingredients to inventory
-        System.out.println("\nStocking inventory...");
+        logger.info("\nStocking inventory...");
         inventoryManager.addIngredient("Chicken", 30);
         inventoryManager.addIngredient("Rice", 100);
         inventoryManager.addIngredient("Spices", 25);
@@ -51,15 +54,15 @@ public class App {
         inventoryManager.setThreshold("Spices", 30);
 
         //check low stock and notify manager
-        System.out.println("\nChecking inventory levels...");
+        logger.info("\nChecking inventory levels...");
         List<String> lowStock = inventoryManager.checkLowStockIngredients();
         if (!lowStock.isEmpty()) {
-            System.out.println("Low stock items: " + lowStock);
+            logger.info("Low stock items: " + lowStock);
             inventoryManager.notifyLowStock(kitchenManager);
         }
 
         //place customer orders
-        System.out.println("\nProcessing customer orders...");
+        logger.info("\nProcessing customer orders...");
         customerManager.placeOrder("Amal", "Tofu Stir Fry");
         customerManager.placeOrder("Basim", "Chicken Rice Bowl");
 
@@ -68,7 +71,7 @@ public class App {
         customerManager.requestCustomMeal("Amal", customIngredients);
 
         //schedule cooking tasks
-        System.out.println("\nScheduling cooking tasks...");
+        logger.info("\nScheduling cooking tasks...");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         try {
@@ -80,30 +83,30 @@ public class App {
             chefManager.addPreparationRequirement(task2.getTaskId(), "Sauce preparation", "Prepare special sauce");
 
             //create an urgent task
-            System.out.println("\nCreating urgent cooking task...");
+            logger.info("\nCreating urgent cooking task...");
             CookingTask urgentTask = chefManager.createUrgentTask("ORDER-URGENT");
             if (urgentTask != null) {
-                System.out.println("Urgent task assigned to: " + urgentTask.getChefId());
+                logger.info("Urgent task assigned to: " + urgentTask.getChefId());
             }
 
             //send daily schedule to chefs
-            System.out.println("\nSending daily schedules to chefs...");
+            logger.info("\nSending daily schedules to chefs...");
             Date scheduleDate = sdf.parse("2025-05-23 00:00:00");
             List<CookingTask> gordonTasks = chefManager.getTasksForDate("Gordon", scheduleDate);
             notificationManager.sendDailySchedule(chef1, gordonTasks, scheduleDate);
 
             //schedule deliveries
-            System.out.println("\nScheduling deliveries...");
+            logger.info("\nScheduling deliveries...");
             Delivery delivery1 = deliveryManager.scheduleDelivery("Amal", "ORDER-1", "2025-05-23 12:30:00");
             Delivery delivery2 = deliveryManager.scheduleDelivery("Basim", "ORDER-2", "2025-05-23 13:45:00");
 
             //schedule delivery reminders
-            System.out.println("\nSetting up delivery reminders...");
+            logger.info("\nSetting up delivery reminders...");
             Customer amal = customerManager.getCustomer("Amal");
             notificationManager.scheduleDeliveryReminders(amal, delivery1);
 
             //generate and send invoices
-            System.out.println("\nGenerating invoices...");
+            logger.info("\nGenerating invoices...");
             Order order1 = new Order("ORDER-1", "Amal");
             order1.addItem(new OrderItem("ITEM-1", "Tofu Stir Fry", 1, 15.99));
 
@@ -121,20 +124,20 @@ public class App {
             invoiceManager.sendInvoice(invoice1, amal);
 
             //generate financial report
-            System.out.println("\nGenerating financial reports...");
+            logger.info("\nGenerating financial reports...");
             FinancialReport monthlyReport = reportingManager.generateMonthlyRevenueReport(new Date());
-            System.out.println("Monthly report generated with " + monthlyReport.getEntries().size() + " entries");
+            logger.info("Monthly report generated with " + monthlyReport.getEntries().size() + " entries");
 
             //process scheduled notifications
-            System.out.println("\nProcessing scheduled notifications...");
+            logger.info("\nProcessing scheduled notifications...");
             notificationManager.processScheduledNotifications();
 
         } catch (ParseException e) {
-            System.out.println("Error with date parsing: " + e.getMessage());
+            logger.info("Error with date parsing: " + e.getMessage());
         }
 
-        System.out.println("\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
-        System.out.println("System operations completed successfully");
-        System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+        logger.info("\n*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+        logger.info("System operations completed successfully");
+        logger.info("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
     }
 }
