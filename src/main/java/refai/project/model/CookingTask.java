@@ -108,6 +108,9 @@ public class CookingTask {
     }
 
     public Date getCookingTime() {
-        return scheduledTime;
+        if (scheduledTime == null) return null;
+        //return estimated completion time based on scheduled time and duration
+        long endTimeMillis = scheduledTime.getTime() + ((long) estimatedDuration * 60 * 1000);
+        return new Date(endTimeMillis);
     }
 }
